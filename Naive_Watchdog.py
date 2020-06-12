@@ -5,7 +5,6 @@ os.environ['TF_KERAS'] = '1'
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # Give the GPU permission to allocate memory to NN execution
 
-
 import onnx
 import keras
 import onnx2keras
@@ -83,20 +82,29 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             # Take any action here when a file is first created.
             print("Received created event - %s." % event.src_path)
-
             model = tf.keras.models.load_model("Material_Classifier.h5")
             IMG_SIZE = 200
-            img_array = cv2.imread('update_here/image.jpg', cv2.IMREAD_GRAYSCALE)
-            new_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+            count = 0
+            time.sleep(10)
+            start_time = time.time()
+            array = []
 
-            prediction_pic = new_array.reshape(-1,1,IMG_SIZE, IMG_SIZE)
+            for file in os.listdir(r'C:\Users\Owen Lu\Desktop\Pytorch lessons\Keras\update_here'):
+                path = os.path.join(r'C:\Users\Owen Lu\Desktop\Pytorch lessons\Keras\update_here',file)
+                img_array = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+                new_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+                
+                prediction_pic = new_array.reshape(-1,1,IMG_SIZE, IMG_SIZE)
 
-            prediction = model.predict(prediction_pic)
-            print(prediction)
-            
+                prediction = model.predict(prediction_pic)
+                
+                count += 1
+                print(str(count))
+            exec_time = time.time() - start_time
+            print("Execution time in seconds: "  + str(exec_time))
+            exit()
 
 
 if __name__ == '__main__':
     w = Watcher()
     w.run()
-
